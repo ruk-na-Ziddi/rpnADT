@@ -551,3 +551,31 @@ void test_popTopTwoElePushRes_pops_top_two_datas_and_pushes_their_devision_value
 	popTopTwoElePushRes(stack,4,"5 5 /");
 	assertEqual(strcmp((*stack.top)->data, "20"), 0);
 }
+
+void test_infixToPostfix_3_4_5_m_6_d_p_gives_3_p_4_m_5_d_6(){
+	char *postFix=infixToPostfix("3+4*5/6");
+	assertEqual(strcmp(postFix, "3 4 5 * 6 / +"), 0);
+	free(postFix);
+}
+
+void test_infixToPostfix_gives_postfix_for_op_300_p_23_cp_m_op_43_m_21_cp_d_op_84_p_7cp(){
+	char *postFix=infixToPostfix("(300+23)*(43-21)/(84+7)");
+	assertEqual(strcmp(postFix, "300 23 + 43 21 - * 84 7 + /"), 0);
+	free(postFix);
+}
+
+// void compare(char * s1,char*s2){
+// 	int i ;
+// 	for(i=0;i<strlen(s2);i++){
+// 		if(s1[i]!=s2[i]){
+// 			printf("%c != %c at %d\n",s1[i],s2[i],i );
+// 		}
+// 	}
+// }
+
+void test_infixToPostfix_gives_postFix_for_op_4_p_8_m_op_6_s_5_cp_d_op_op_3_s_2_cp_m_op_2_p_2_cp_cp(){
+	char * expected="4 8 + 6 5 - * 3 2 - 2 2 + * /";
+	char *postFix=infixToPostfix("(4+8)*(6-5)/((3-2)*(2+2))");
+	assertEqual(strcmp(postFix,expected),0);
+	free(postFix);
+}

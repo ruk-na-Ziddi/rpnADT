@@ -65,15 +65,15 @@ void popTopTwoElePushRes(Stack stack,int i,char *expression){
 
 int evaluation(char *expression){
 	NUM n;
-	int i,j=0,length=strlen(expression),return_value;
+	int i,indexStrNum=0,length=strlen(expression),return_value;
 	char *strNum=NULL;
 	Stack stack=createStack();
 	for (i = 0; i < length; ++i){
 		if(isOprand(expression[i])){
-			n=makeOneNumber(strNum, expression[i], j); 
-			j=n.position; strNum=n.num;
+			n=makeOneNumber(strNum, expression[i], indexStrNum); 
+			indexStrNum=n.position; strNum=n.num;
 			if(expression[i+1]==' '){
-				j=0; push(stack, strNum);
+				indexStrNum=0; push(stack, strNum);
 				strNum=calloc(0,0);
 			}
 		}
@@ -109,4 +109,82 @@ Result evaluate(char *expression){
 	operators=noOFOperators(expression);
 	result=(oprands==(operators+1))?(Result){0,evaluation(expression)}:(Result){1,-1};
 	return result;
+}
+
+int priorty(char c){
+	switch(c){
+		case '(': return 1;
+		case '+':
+		case '-': return 2;
+		case '*':
+		case '/': return 3;
+	}
+	return 4;
+}
+
+int isOpenParanthesis(char c){
+	return (c=='(');
+}
+
+int isCloseParanthesis(char c){
+	return (c==')');
+}
+
+void pushOperatorOrOpenParanthesis(Stack stack, char *c){
+	if(isOperator(*c) || isOpenParanthesis(*c)){
+		push(stack, (c));
+	}
+}
+
+void MorePriortyOperatorIsOnTop(Stack stack, char c, int * j,char * strNum){
+	if((*stack.top)!=NULL && isOperator(c) && (priorty(*(char*)(*stack.top)->data) >= priorty(c)) ){
+        strNum[(*j)++]=*(char*)pop(stack);
+    	strNum[(*j)++]=' ';
+	}
+}
+
+void closeParanthesisIsFound(Stack stack,char c,int * j,char *strNum){
+	if(isCloseParanthesis(c)){
+		while(*(char*)(*stack.top)->data!='('){
+			strNum[(*j)-1]!=' '&&(strNum[(*j)++]=' ');
+			strNum[(*j)++]=*(char*)pop(stack);
+		}
+		strNum[(*j)-1]!=' '&&(strNum[(*j)++]=' ');
+		pop(stack);
+	}
+}
+
+void emptyingOperatorStack(Stack stack, int * j,char *strNum){
+	while(stack.list->count!=0){
+		if(strNum[((*j)-1)]==' '){
+			strNum[(*j)++]=*(char*)pop(stack);
+		}else{
+			strNum[(*j)++]=' ';
+			strNum[(*j)++]=*(char*)pop(stack);
+		}
+	}
+}
+
+void AfterOprandOperatorFound(char c,int * i,int * j,char * strNum,char * expression){
+	if(isOprand(c)){
+		strNum[(*j)++]=c;
+		if(isOperator(expression[(*i)+1])){
+			strNum[(*j)++]=' ';
+		}
+	}
+}
+
+char * infixToPostfix(char * expression){
+	int i,j=0,lenght=strlen(expression);
+	char *strNum=NULL;
+	Stack stack=createStack();
+	strNum=calloc(sizeof(char), lenght*3);
+	for(i=0; i<lenght; ++i){
+		AfterOprandOperatorFound(expression[i], &i, &j, strNum, expression);
+		MorePriortyOperatorIsOnTop(stack, expression[i], &j, strNum);
+		closeParanthesisIsFound(stack, expression[i], &j, strNum);
+		pushOperatorOrOpenParanthesis(stack, &expression[i]);
+	}
+	emptyingOperatorStack(stack, &j, strNum);
+	return strNum;
 }

@@ -23,3 +23,4 @@ int noOFOperators(char *expression);
 void popTopTwoElePushRes(Stack stack,int i,char *expression);
 int evaluation(char *expression);
 Result evaluate(char *expression);
+char * infixToPostfix(char * expression);
