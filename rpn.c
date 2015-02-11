@@ -186,5 +186,6 @@ char * infixToPostfix(char * expression){
 		pushOperatorOrOpenParanthesis(stack, &expression[i]);
 	}
 	emptyingOperatorStack(stack, &j, strNum);
+	free(stack.list);
 	return strNum;
 }
